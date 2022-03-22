@@ -52,13 +52,9 @@ struct ODEProblem{uType,tType,isinplace,P,F,K,PT} <:
 
   @add_kwonly function ODEProblem{iip,recompile}(f,u0,tspan,p=NullParameters();kwargs...) where {iip,recompile}
     if !recompile
-      if iip
-        ODEProblem{iip}(wrapfun_iip(f,(u0,u0,p,tspan[1])),u0,tspan,p;kwargs...)
-      else
-        ODEProblem{iip}(wrapfun_oop(f,(u0,p,tspan[1])),u0,tspan,p;kwargs...)
-      end
+      ODEProblem{iip}(ODEFunction{iip,recompile}(f), u0, tspan, p; kwargs...)
     else
-      ODEProblem{iip}(f,u0,tspan,p;kwargs...)
+      ODEProblem{iip}(f, u0, tspan, p; kwargs...)
     end
   end
 end

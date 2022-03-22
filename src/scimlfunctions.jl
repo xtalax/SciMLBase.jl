@@ -475,45 +475,6 @@ function ODEFunction{iip,true}(f;
                     jvp, vjp, jac_prototype, sparsity, Wfact,
                     Wfact_t, paramjac, syms, indepsym, observed, _colorvec)
 end
-function ODEFunction{iip,false}(f;
-                 mass_matrix=I,
-                 analytic=nothing,
-                 tgrad=nothing,
-                 jac=nothing,
-                 jvp=nothing,
-                 vjp=nothing,
-                 jac_prototype=nothing,
-                 sparsity=jac_prototype,
-                 Wfact=nothing,
-                 Wfact_t=nothing,
-                 paramjac = nothing,
-                 syms = nothing,
-                 indepsym = nothing,
-                 observed = DEFAULT_OBSERVED,
-                 colorvec = nothing) where iip
-
-                 if jac === nothing && isa(jac_prototype, AbstractDiffEqLinearOperator)
-                  if iip
-                    jac = update_coefficients! #(J,u,p,t)
-                  else
-                    jac = (u,p,t) -> update_coefficients!(deepcopy(jac_prototype),u,p,t)
-                  end
-                 end
-
-                 if jac_prototype !== nothing && colorvec === nothing && ArrayInterface.fast_matrix_colors(jac_prototype)
-                   _colorvec = ArrayInterface.matrix_colors(jac_prototype)
-                 else
-                   _colorvec = colorvec
-                 end
-
-                 ODEFunction{iip,
-                  Any, Any, Any, Any, Any,
-                  Any, Any, Any, Any, Any,
-                  Any, Any, typeof(syms), typeof(indepsym), Any, typeof(_colorvec)}(
-                    f, mass_matrix, analytic, tgrad, jac,
-                    jvp, vjp, jac_prototype, sparsity, Wfact,
-                    Wfact_t, paramjac, syms, indepsym, observed, _colorvec)
-end
 ODEFunction{iip}(f; kwargs...) where iip = ODEFunction{iip,RECOMPILE_BY_DEFAULT}(f; kwargs...)
 ODEFunction{iip}(f::ODEFunction; kwargs...) where iip = f
 ODEFunction(f; kwargs...) = ODEFunction{isinplace(f, 4),RECOMPILE_BY_DEFAULT}(f; kwargs...)
